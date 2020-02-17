@@ -1,3 +1,7 @@
+'''
+Training script for CIFAR-10/100
+Copyright (c) Wei YANG, 2017
+'''
 from __future__ import print_function
 
 import argparse
@@ -19,7 +23,10 @@ import torchvision.datasets as datasets
 import models.cifar as models
 
 from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
-from optimizers.srsgd import *
+from utils.radam import RAdam, AdamW
+from optimizers.sgd_adaptive3 import *
+from optimizers.SRAdamW import *
+from optimizers.SRRAdam import *
 
 from tensorboardX import SummaryWriter
 
@@ -44,7 +51,7 @@ parser.add_argument('--train-batch', default=128, type=int, metavar='N',
                     help='train batchsize')
 parser.add_argument('--test-batch', default=100, type=int, metavar='N',
                     help='test batchsize')
-parser.add_argument('--optimizer', default='sgd', type=str, choices=['adamw', 'adam', 'radam', 'sgd', 'srsgd'])
+parser.add_argument('--optimizer', default='sgd', type=str, choices=['adamw', 'adam', 'radam', 'sgd', 'srsgd', 'sradam', 'sradamw','srradam'])
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--beta1', default=0.9, type=float,
@@ -91,6 +98,10 @@ parser.add_argument('--gpu-id', default='0', type=str,
                     help='id(s) for CUDA_VISIBLE_DEVICES')
 
 parser.add_argument('--model_name', default='sgd')
+
+# HOResNet
+parser.add_argument('--eta', default=1.0, type=float, help='eta in HOResNet')
+parser.add_argument('--feature_vec', default='x', type=str)
 
 args = parser.parse_args()
 state = {k: v for k, v in args._get_kwargs()}
@@ -187,6 +198,60 @@ def main():
                     depth=args.depth,
                     block_name=args.block_name,
                 )
+    elif args.arch.startswith('horesnet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    eta=args.eta,
+                    block_name=args.block_name,
+                    feature_vec=args.feature_vec
+                )
+    elif args.arch.startswith('hopreresnet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    eta=args.eta,
+                    block_name=args.block_name,
+                    feature_vec=args.feature_vec
+                )
+    elif args.arch.startswith('nagpreresnet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    eta=args.eta,
+                    block_name=args.block_name,
+                    feature_vec=args.feature_vec
+                )
+    elif args.arch.startswith('mompreresnet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    eta=args.eta,
+                    block_name=args.block_name,
+                    feature_vec=args.feature_vec
+                )
+    elif args.arch.startswith('v2_preresnet'):
+        if args.depth == 18:
+            block_name = 'basicblock'
+            num_blocks=[2,2,2,2]
+        elif args.depth == 34:
+            block_name = 'basicblock'
+            num_blocks=[3,4,6,3]
+        elif args.depth == 50:
+            block_name = 'bottleneck'
+            num_blocks=[3,4,6,3]
+        elif args.depth == 101:
+            block_name = 'bottleneck'
+            num_blocks=[3,4,23,3]
+        elif args.depth == 152:
+            block_name = 'bottleneck'
+            num_blocks=[3,8,36,3]
+            
+        model = models.__dict__[args.arch](
+                    block_name=block_name, 
+                    num_blocks=num_blocks, 
+                    num_classes=num_classes
+                )
     else:
         print('Model is specified wrongly - Use standard model')
         model = models.__dict__[args.arch](num_classes=num_classes)
@@ -207,7 +272,17 @@ def main():
         optimizer = optim.Adam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
     elif args.optimizer.lower() == 'srsgd':
         iter_count = 1
-        optimizer = SRSGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[0])
+        optimizer = SGD_Adaptive(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[0])
+    elif args.optimizer.lower() == 'sradam':
+        iter_count = 1
+        optimizer = SRNAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, restarting_iter=args.restart_schedule[0]) 
+    elif args.optimizer.lower() == 'sradamw':
+        iter_count = 1
+        optimizer = SRAdamW(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = args.warmup, restarting_iter=args.restart_schedule[0]) 
+    elif args.optimizer.lower() == 'srradam':
+        #NOTE: need to double-check this
+        iter_count = 1
+        optimizer = SRRAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = args.warmup, restarting_iter=args.restart_schedule[0]) 
     
     # Resume
     title = 'cifar-10-' + args.arch
@@ -227,7 +302,7 @@ def main():
         start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             iter_count = optimizer.param_groups[0]['iter_count']
         schedule_index = checkpoint['schedule_index']
         state['lr'] =  optimizer.param_groups[0]['lr']
@@ -249,13 +324,28 @@ def main():
             if epoch in args.schedule:
                 optimizer = SGD_Adaptive(model.parameters(), lr=args.lr * (args.gamma**schedule_index), weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[schedule_index])
                 schedule_index += 1
+                
+        elif args.optimizer.lower() == 'sradam':
+            if epoch in args.schedule:
+                optimizer = SRNAdam(model.parameters(), lr=args.lr * (args.gamma**schedule_index), betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, restarting_iter=args.restart_schedule[schedule_index]) 
+                schedule_index += 1
+                
+        elif args.optimizer.lower() == 'sradamw':
+            if epoch in args.schedule:
+                optimizer = SRAdamW(model.parameters(), lr=args.lr * (args.gamma**schedule_index), betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = 0, restarting_iter=args.restart_schedule[schedule_index])
+                schedule_index += 1
+                
+        elif args.optimizer.lower() == 'srradam':
+            if epoch in args.schedule:
+                optimizer = SRRAdam(model.parameters(), lr=args.lr * (args.gamma**schedule_index), betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = 0, restarting_iter=args.restart_schedule[schedule_index])
+                schedule_index += 1
             
         else:
             adjust_learning_rate(optimizer, epoch)
 
         logger.file.write('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, state['lr']))
         
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             train_loss, train_acc, iter_count = train(trainloader, model, criterion, optimizer, epoch, use_cuda, logger)
         else:
             train_loss, train_acc = train(trainloader, model, criterion, optimizer, epoch, use_cuda, logger)
@@ -333,7 +423,7 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda, logger):
         optimizer.step()
         
         # for restarting
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             iter_count, iter_total = optimizer.update_iter()
 
         # measure elapsed time
@@ -356,7 +446,7 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda, logger):
         logger.file.write(bar.suffix)
         bar.next()
     bar.finish()
-    if args.optimizer.lower() == 'srsgd':
+    if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
         return (losses.avg, top1.avg, iter_count)
     else:
         return (losses.avg, top1.avg)

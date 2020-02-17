@@ -4,7 +4,7 @@ SGD with adaptive Nesterov momentum, mu = (k)/(k+3) if k <=200; else k = 1
 import torch
 from .optimizer import Optimizer, required
 
-class SGD_Adaptive(Optimizer):
+class SRSGD(Optimizer):
     """
     Stochastic gradient descent with Adaptively restarting (200 iters) Nesterov momentum.
     Args:
@@ -13,7 +13,7 @@ class SGD_Adaptive(Optimizer):
         weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
         iter_count (integer): count the iterations mod 200
     Example:
-         >>> optimizer = torch.optim.SGD_Adaptive(model.parameters(), lr=0.1, weight_decay=5e-4, iter_count=1)
+         >>> optimizer = torch.optim.SRSGD(model.parameters(), lr=0.1, weight_decay=5e-4, iter_count=1)
         >>> optimizer.zero_grad()
         >>> loss_fn(model(input), target).backward()
         >>> optimizer.step()
@@ -33,10 +33,10 @@ class SGD_Adaptive(Optimizer):
             raise ValueError("Invalid iter total: {}".format(restarting_iter))
         
         defaults = dict(lr=lr, weight_decay=weight_decay, iter_count=iter_count, restarting_iter=restarting_iter)
-        super(SGD_Adaptive, self).__init__(params, defaults)
+        super(SRSGD, self).__init__(params, defaults)
     
     def __setstate__(self, state):
-        super(SGD_Adaptive, self).__setstate__(state)
+        super(SRSGD, self).__setstate__(state)
     
     def update_iter(self):
         idx = 1

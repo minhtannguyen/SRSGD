@@ -1,3 +1,7 @@
+'''
+Training script for ImageNet
+Copyright (c) Wei YANG, 2017
+'''
 from __future__ import print_function
 
 import argparse
@@ -22,8 +26,12 @@ from torchvision.models.densenet import DenseNet
 from torchvision.models.resnet import ResNet, Bottleneck
 
 from utils import Bar, Logger, AverageMeter, mkdir_p, savefig, LoggerDistributed
+from utils.radam import RAdam, AdamW
+from utils.lsradam import LSRAdam, LSAdamW
 
-from optimizers.srsgd import *
+from optimizers.sgd_adaptive3 import *
+from optimizers.SRAdamW import *
+from optimizers.SRRAdam import *
 
 from tensorboardX import SummaryWriter
 
@@ -276,9 +284,30 @@ def main():
         optimizer = AdamW(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay, warmup = 0)
     elif args.optimizer.lower() == 'radam':
         optimizer = RAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
+    elif args.optimizer.lower() == 'lsadam': 
+        optimizer = LSAdamW(model.parameters(), lr=args.lr*((1.+4.*args.sigma)**(0.25)), 
+                           betas=(args.beta1, args.beta2),
+                           weight_decay=args.weight_decay, 
+                           sigma=args.sigma)
+    elif args.optimizer.lower() == 'lsradam':
+        sigma = 0.1
+        optimizer = LSRAdam(model.parameters(), lr=args.lr*((1.+4.*args.sigma)**(0.25)), 
+                           betas=(args.beta1, args.beta2),
+                           weight_decay=args.weight_decay, 
+                           sigma=args.sigma)
     elif args.optimizer.lower() == 'srsgd':
         iter_count = 1
-        optimizer = SRSGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[0])
+        optimizer = SGD_Adaptive(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[0])
+    elif args.optimizer.lower() == 'sradam':
+        iter_count = 1
+        optimizer = SRNAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, restarting_iter=args.restart_schedule[0]) 
+    elif args.optimizer.lower() == 'sradamw':
+        iter_count = 1
+        optimizer = SRAdamW(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = 0, restarting_iter=args.restart_schedule[0]) 
+    elif args.optimizer.lower() == 'srradam':
+        #NOTE: need to double-check this
+        iter_count = 1
+        optimizer = SRRAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), iter_count=iter_count, weight_decay=args.weight_decay, warmup = 0, restarting_iter=args.restart_schedule[0]) 
     
     schedule_index = 1
     # Resume
@@ -295,7 +324,7 @@ def main():
         start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             iter_count = optimizer.param_groups[0]['iter_count']
         schedule_index = checkpoint['schedule_index']
         state['lr'] =  optimizer.param_groups[0]['lr']
@@ -347,7 +376,7 @@ def main():
         if args.local_rank == 0:
             logger.file.write('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, state['lr']))
         
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             train_loss, train_top1, train_top5, iter_count = train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger)
         else:
             train_loss, train_top1, train_top5 = train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger)
@@ -453,7 +482,7 @@ def train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger):
         top5.update(to_python_float(prec5), n)
         
         # for restarting
-        if args.optimizer.lower() == 'srsgd':
+        if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
             iter_count, iter_total = optimizer.update_iter()
 
         # measure elapsed time
@@ -482,7 +511,7 @@ def train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger):
         if args.local_rank == 0:
             logger.file.write(bar.suffix)
     bar.finish()
-    if args.optimizer.lower() == 'srsgd':
+    if args.optimizer.lower() == 'srsgd' or args.optimizer.lower() == 'sradam' or args.optimizer.lower() == 'sradamw' or args.optimizer.lower() == 'srradam':
         return (losses.avg, top1.avg, top5.avg, iter_count)
     else:
         return (losses.avg, top1.avg, top5.avg)
