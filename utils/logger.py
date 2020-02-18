@@ -164,5 +164,3 @@ class LoggerMonitor(object):
             legend_text += plot_overlap(logger, names)
         plt.legend(legend_text, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.grid(True)
-                    
-if __name__ == '__main__':
