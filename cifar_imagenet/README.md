@@ -32,5 +32,5 @@ The ImageNet LMDB dataset should be placed inside the directory `/datasets/image
 `fid_mean_cov.npz`  `train_faster_imagefolder.lmdb`  `train_faster_imagefolder.lmdb.pt`  `val_faster_imagefolder.lmdb`  `val_faster_imagefolder.lmdb.pt`
 
 ## Training
-A training [recipe](/cifar_imagenet/recipes.md) is provided for image classification experiments. 
+A training [recipe](/cifar_imagenet/recipes.md) is provided for image classification experiments. The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and the appendix can be run using the same `cifar.py` and `imagenet.py` files with the different values of parameters.
 
