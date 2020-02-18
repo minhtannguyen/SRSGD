@@ -69,7 +69,7 @@ parser.add_argument('--train-batch', default=256, type=int, metavar='N',
                     help='train batchsize (default: 256)')
 parser.add_argument('--test-batch', default=200, type=int, metavar='N',
                     help='test batchsize (default: 200)')
-parser.add_argument('--optimizer', default='sgd', type=str, help='optimizer sgd|adamw|radam|srsgd')
+parser.add_argument('--optimizer', default='sgd', type=str, help='optimizer sgd|adam|radam')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--beta1', default=0.9, type=float,
@@ -120,6 +120,9 @@ parser.add_argument('--dali_cpu', action='store_true',
 
 parser.add_argument('--local_rank', type=int, default=0,
                     help='rank of process')
+
+# LSAdam
+parser.add_argument('--sigma', default=0.1, type=float, help='sigma in LSAdam')
 
 args = parser.parse_args()
 
@@ -284,6 +287,8 @@ def main():
         # Load checkpoint.
         print('==> Resuming from checkpoint..')
         assert os.path.isfile(args.resume), 'Error: no checkpoint directory found!'
+        # args.checkpoint = os.path.dirname(args.resume)
+        # checkpoint = torch.load(args.resume, map_location = lambda storage, loc: storage.cuda(args.local_rank))
         checkpoint = torch.load(args.resume, map_location = torch.device('cpu'))
         best_top1 = checkpoint['best_top1']
         best_top5 = checkpoint['best_top5']
@@ -326,7 +331,7 @@ def main():
             if epoch in args.schedule:
                 current_lr = args.lr * (args.gamma**schedule_index)
                 current_restarting_iter = args.restart_schedule[schedule_index]
-                optimizer = SRSGD(model.parameters(), lr=current_lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=current_restarting_iter)
+                optimizer = SGD_Adaptive(model.parameters(), lr=current_lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=current_restarting_iter)
                 schedule_index += 1
             
             if epoch >= args.schedule[-1]:
@@ -334,7 +339,7 @@ def main():
                 current_lr = args.lr * (args.gamma**prev_schedule_index)
                 start_decay_restarting_iter = args.restart_schedule[prev_schedule_index] - 1
                 current_restarting_iter = start_decay_restarting_iter * (args.epochs - epoch - 1)/(args.epochs - args.schedule[-1] - 1) + 1
-                optimizer = SRSGD(model.parameters(), lr=current_lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=current_restarting_iter)
+                optimizer = SGD_Adaptive(model.parameters(), lr=current_lr, weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=current_restarting_iter)
                 
         else:
             adjust_learning_rate(optimizer, epoch)
@@ -413,6 +418,7 @@ def train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger):
     end = time.time()
 
     train_loader_len = len(train_loader)
+    # print('Length of train loader = %i\n'%train_loader_len)
     bar = Bar('Processing', max=train_loader_len)
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         # measure data loading time
@@ -426,6 +432,7 @@ def train(train_loader, model, criterion, optimizer, epoch, use_cuda, logger):
             inputs = inputs.cuda()
             targets = targets.cuda()
         
+        # print('input size = %i, device %s\n'%(inputs.size(0), inputs.device))
         # compute output
         optimizer.zero_grad()
         outputs = model(inputs)

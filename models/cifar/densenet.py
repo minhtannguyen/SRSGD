@@ -113,7 +113,7 @@ class DenseNet(nn.Module):
     def _make_denseblock(self, block, blocks):
         layers = []
         for i in range(blocks):
-            # Currently we fix the expansion ratio as the default value
+            # Currently fix the expansion ratio as the default value
             layers.append(block(self.inplanes, growthRate=self.growthRate, dropRate=self.dropRate))
             self.inplanes += self.growthRate
 

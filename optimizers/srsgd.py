@@ -1,6 +1,3 @@
-"""
-SGD with adaptive Nesterov momentum, mu = (k)/(k+3) if k <=200; else k = 1
-"""
 import torch
 from .optimizer import Optimizer, required
 
@@ -42,17 +39,10 @@ class SRSGD(Optimizer):
         idx = 1
         for group in self.param_groups:
             if idx == 1:
-                '''
                 group['iter_count'] += 1
-                group['iter_total'] += 1
-                if group['iter_count'] >= 40*(group['iter_total']/10000+1): #50: #100: #200 #TODO: add another total count, 20*(total_count%10000 + 1), we can reschedule this, "40 can be made smaller, larger factor*(group['iter_total']/10000)"
-                    group['iter_count'] = 1
-                '''
-                group['iter_count'] += 1
-                if group['iter_count'] >= group['restarting_iter']: #50: #100: #200 #TODO: add another total count, 20*(total_count%10000 + 1), we can reschedule this, "40 can be made smaller, larger factor*(group['iter_total']/10000)" 2**group['iter_total']
+                if group['iter_count'] >= group['restarting_iter']:
                     group['iter_count'] = 1
             idx += 1 
-        #print('Iter11: ', group['iter_count'])
         return group['iter_count'], group['restarting_iter']
     
     def step(self, closure=None):
@@ -81,7 +71,6 @@ class SRSGD(Optimizer):
                 else:
                     buf0 = param_state['momentum_buffer']
                 
-                # buf1 = p.data - momentum*group['lr']*d_p
                 buf1 = p.data - group['lr']*d_p
                 p.data = buf1 + momentum*(buf1 - buf0)
                 param_state['momentum_buffer'] = buf1

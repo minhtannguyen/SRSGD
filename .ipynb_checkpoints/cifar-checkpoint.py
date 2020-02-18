@@ -197,6 +197,8 @@ def main():
     criterion = nn.CrossEntropyLoss()
     if args.optimizer.lower() == 'sgd':
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    # elif args.optimizer.lower() == 'adam':
+    #     optimizer = optim.Adam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
     elif args.optimizer.lower() == 'radam':
         optimizer = RAdam(model.parameters(), lr=args.lr, betas=(args.beta1, args.beta2), weight_decay=args.weight_decay)
     elif args.optimizer.lower() == 'adamw':
@@ -219,6 +221,7 @@ def main():
         # Load checkpoint.
         print('==> Resuming from checkpoint..')
         assert os.path.isfile(args.resume), 'Error: no checkpoint directory found!'
+        # args.checkpoint = os.path.dirname(args.resume)
         checkpoint = torch.load(args.resume)
         best_acc = checkpoint['best_acc']
         start_epoch = checkpoint['epoch']
@@ -244,7 +247,7 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         if args.optimizer.lower() == 'srsgd':
             if epoch in args.schedule:
-                optimizer = SRSGD(model.parameters(), lr=args.lr * (args.gamma**schedule_index), weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[schedule_index])
+                optimizer = SGD_Adaptive(model.parameters(), lr=args.lr * (args.gamma**schedule_index), weight_decay=args.weight_decay, iter_count=iter_count, restarting_iter=args.restart_schedule[schedule_index])
                 schedule_index += 1
             
         else:

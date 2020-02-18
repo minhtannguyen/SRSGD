@@ -4,7 +4,6 @@ Creates a ResNeXt Model as defined in:
 Xie, S., Girshick, R., Dollar, P., Tu, Z., & He, K. (2016). 
 Aggregated residual transformations for deep neural networks. 
 arXiv preprint arXiv:1611.05431.
-import from https://github.com/prlz77/ResNeXt.pytorch/blob/master/models/model.py
 """
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,7 +13,7 @@ __all__ = ['resnext']
 
 class ResNeXtBottleneck(nn.Module):
     """
-    RexNeXt bottleneck type C (https://github.com/facebookresearch/ResNeXt/blob/master/models/resnext.lua)
+    RexNeXt bottleneck type C 
     """
     def __init__(self, in_channels, out_channels, stride, cardinality, widen_factor):
         """ Constructor
