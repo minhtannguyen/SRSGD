@@ -26,15 +26,18 @@ To run our code without using the NVIDIA Pytorch containter, at least the follow
 - [NVIDIA APEX](https://github.com/NVIDIA/apex)
 
 ## ImageNet Experiments Requires ImageNet Datasets in LMDB Format
-Using the dafault `datasets.ImageFolder` + `data.DataLoader` is not efficient due to the slow reading of discontinuous small chunks. In order to speed up the training on ImageNet, we convert small JPEG images into a large binary file in Lighting Memory-Mapped Database (LMDB) format and load the training data with `data.distributed.DistributedSampler` and `data.DataLoader`. You can follow the [instructions](http://caffe.berkeleyvision.org/gathered/examples/imagenet.html) for Caffe to build the LMDB dataset of ImageNet. Alternatively, you can use these following two sets of instructions to build the LMDB dataset of ImageNet:[https://github.com/intel/caffe/wiki/How-to-create-ImageNet-LMDB](https://github.com/intel/caffe/wiki/How-to-create-ImageNet-LMDB) and [https://github.com/rioyokotalab/caffe/wiki/How-to-Create-Imagenet-ILSVRC2012-LMDB](https://github.com/rioyokotalab/caffe/wiki/How-to-Create-Imagenet-ILSVRC2012-LMDB).
+Using the default `datasets.ImageFolder` + `data.DataLoader` is not efficient due to the slow reading of discontinuous small chunks. In order to speed up the training on ImageNet, we convert small JPEG images into a large binary file in Lighting Memory-Mapped Database (LMDB) format and load the training data with `data.distributed.DistributedSampler` and `data.DataLoader`. You can follow the [instructions](http://caffe.berkeleyvision.org/gathered/examples/imagenet.html) for Caffe to build the LMDB dataset of ImageNet. Alternatively, you can use these following two sets of instructions to build the LMDB dataset of ImageNet:[https://github.com/intel/caffe/wiki/How-to-create-ImageNet-LMDB](https://github.com/intel/caffe/wiki/How-to-create-ImageNet-LMDB) and [https://github.com/rioyokotalab/caffe/wiki/How-to-Create-Imagenet-ILSVRC2012-LMDB](https://github.com/rioyokotalab/caffe/wiki/How-to-Create-Imagenet-ILSVRC2012-LMDB).
 
 The ImageNet LMDB dataset should be placed inside the directory `/datasets/imagenet` in your computer and contains the following files:
 
 `fid_mean_cov.npz`  `train_faster_imagefolder.lmdb`  `train_faster_imagefolder.lmdb.pt`  `val_faster_imagefolder.lmdb`  `val_faster_imagefolder.lmdb.pt`
 
+## SRSGD Optimizer
+We provide the SRSGD class in `./optimizers/srsgd.py`.
+
 ## Code for Plotting Figures in Our Paper
 We provide code for plotting figures in our paper in the jupyter notebook `plot_code_srsgd.ipynb`. For Figure 6 in the Appendix, we followed this github: `https://github.com/wronnyhuang/gen-viz/tree/master/minefield`. Instead of using SGD, we trained the model using SRSGD and plotted the trajectories. Since this visualization code took 2 or 3 days to finish, we didn't include it in `plot_code_srsgd.ipynb`. 
 
 ## Training
-A training [recipe](/cifar_imagenet/recipes.md) is provided for image classification experiments (see `recipes.md`). The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and the appendix can be run using the same `cifar.py` and `imagenet.py` files with different values of parameters.
+A training [recipe](/cifar_imagenet/recipes.md) is provided for image classification experiments (see `recipes.md`). The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and in the appendix can be run using the same `cifar.py` and `imagenet.py` files with different values of parameters.
 

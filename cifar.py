@@ -23,9 +23,6 @@ from optimizers.srsgd import *
 
 from tensorboardX import SummaryWriter
 
-# from tensorboardX import SummaryWriter
-# writer = SummaryWriter(logdir='/cps/gadam/log_cifa10/')
-
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
