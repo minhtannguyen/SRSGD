@@ -1,5 +1,6 @@
 <h1 align="center">Scheduled Restart SGD</h1>
 <h5 align="center">Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent</h5>
+<h5 align="center">[https://arxiv.org/abs/2002.10583](Paper), [https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing](Slides), [http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd/](Blog)</h5>
 
 ## Requirements
 This code is tested inside the NVIDIA Pytorch docker container release 19.09. This container can be pulled from NVIDIA GPU Cloud as follows:
@@ -33,7 +34,7 @@ The ImageNet LMDB dataset should be placed inside the directory `/datasets/image
 `fid_mean_cov.npz`  `train_faster_imagefolder.lmdb`  `train_faster_imagefolder.lmdb.pt`  `val_faster_imagefolder.lmdb`  `val_faster_imagefolder.lmdb.pt`
 
 ## SRSGD Optimizer
-We provide the SRSGD class in `./optimizers/srsgd.py`.
+We provide the SRSGD class in `./optimizers/srsgd.py`. Our train functions in `cifar.py` and `imagenet.py`call `iter_count, iter_total = optimizer.update_iter()` after `optimizer.step()`.
 
 ## Code for Plotting Figures in Our Paper
 We provide code for plotting figures in our paper in the jupyter notebook `plot_code_srsgd.ipynb`. For Figure 7 in the Appendix, we followed this github: `https://github.com/wronnyhuang/gen-viz/tree/master/minefield`. Instead of using SGD, we trained the model using SRSGD and plotted the trajectories. Since this visualization code took 2 or 3 days to finish, we didn't include it in `plot_code_srsgd.ipynb`. 

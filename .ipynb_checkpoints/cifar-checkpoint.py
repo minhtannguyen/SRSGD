@@ -23,6 +23,9 @@ from optimizers.srsgd import *
 
 from tensorboardX import SummaryWriter
 
+# from tensorboardX import SummaryWriter
+# writer = SummaryWriter(logdir='/cps/gadam/log_cifa10/')
+
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -33,7 +36,7 @@ parser.add_argument('-d', '--dataset', default='cifar10', type=str)
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 # Optimization options
-parser.add_argument('--epochs', default=200, type=int, metavar='N',
+parser.add_argument('--epochs', default=300, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -52,9 +55,9 @@ parser.add_argument('--warmup', default=0, type=float,
                     help='warmup steps for adam')
 parser.add_argument('--drop', '--dropout', default=0, type=float,
                     metavar='Dropout', help='Dropout ratio')
-parser.add_argument('--schedule', type=int, nargs='+', default=[80, 120, 160],
+parser.add_argument('--schedule', type=int, nargs='+', default=[150, 225],
                         help='Decrease learning rate at these epochs.')
-parser.add_argument('--restart-schedule', type=int, nargs='+', default=[30, 60, 90, 120],
+parser.add_argument('--restart-schedule', type=int, nargs='+', default=[80, 200, 500, 1000],
                         help='Restart at after these amounts of epochs.')
 parser.add_argument('--gamma', type=float, default=0.1, help='LR is multiplied by gamma on schedule.')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
