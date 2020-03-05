@@ -13,7 +13,7 @@
 <p align="center">
   <img src="pics/error_vs_depth_srsgd.jpg">
 </p>
-Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. **Advantage of SRSGD continues to grow with depth**.
+Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. <strong>Advantage of SRSGD continues to grow with depth</strong>.
 <br/>
 <br/>
 
