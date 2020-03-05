@@ -1,7 +1,7 @@
 <h1 align="center">Scheduled Restart SGD</h1>
 <h5 align="center">Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent</h5>
 
-![Image of SRSGD](/cifar_imagenet/icon.jpg)
+![Image of SRSGD](icon.jpg)
 
 ## Resources
 [Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd)
@@ -44,5 +44,5 @@ We provide the SRSGD class in `./optimizers/srsgd.py`. Our train functions in `c
 We provide code for plotting figures in our paper in the jupyter notebook `plot_code_srsgd.ipynb`. For Figure 7 in the Appendix, we followed this github: `https://github.com/wronnyhuang/gen-viz/tree/master/minefield`. Instead of using SGD, we trained the model using SRSGD and plotted the trajectories. Since this visualization code took 2 or 3 days to finish, we didn't include it in `plot_code_srsgd.ipynb`. 
 
 ## Training
-A training [recipe](/cifar_imagenet/recipes.md) is provided for image classification experiments (see `recipes.md`). The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and in the appendix can be run using the same `cifar.py` and `imagenet.py` files with different values of parameters.
+A training [recipe](recipes.md) is provided for image classification experiments (see `recipes.md`). The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and in the appendix can be run using the same `cifar.py` and `imagenet.py` files with different values of parameters.
 
