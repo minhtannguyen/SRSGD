@@ -2,7 +2,7 @@
 <h5 align="center">Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent</h5>
 
 <p align="center">
-  <img width="307" height="200" src="icon.jpg">
+  <img width="307" height="200" src="pics/icon.jpg">
 </p>
 
 ## Resources
