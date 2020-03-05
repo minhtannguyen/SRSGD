@@ -8,6 +8,13 @@
 ## Resources
 [Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd)
 
+## Key Results
+
+<p align="center">
+  <img width="307" height="200" src="pics/error_vs_depth_srsgd.png">
+    Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. Advantage of SRSGD continues to grow with depth.
+</p>
+
 ## Requirements
 This code is tested inside the NVIDIA Pytorch docker container release 19.09. This container can be pulled from NVIDIA GPU Cloud as follows:
 
