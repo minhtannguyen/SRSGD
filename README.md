@@ -15,8 +15,9 @@
 </p>
 Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. Advantage of SRSGD continues to grow with depth.
 
+
 <p align="center">
-  <img src="pics/srsgd_epoch_reduction.png">
+  <img src="pics/srsgd_epoch_reduction.png" width="50%" heigh="50%">
 </p>
 Figure 2: Test error vs. number of epoch reduction in CIFAR10 and ImageNet training. The dashed lines are test errors of the SGD baseline. For CIFAR, SRSGD training with fewer epochs can achieve comparable results to SRSGD training with full 200 epochs. For ImageNet, training with less epochs slightly decreases the performance of SRSGD but still achieves comparable results to the SGD baseline training.
 
