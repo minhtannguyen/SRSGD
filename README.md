@@ -13,14 +13,14 @@
 <p align="center">
   <img src="pics/error_vs_depth_srsgd.jpg">
 </p>
-Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. Advantage of SRSGD continues to grow with depth.
+Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. **Advantage of SRSGD continues to grow with depth**.
 <br/>
 <br/>
 
 <p align="center">
   <img src="pics/srsgd_epoch_reduction.png" width="80%" heigh="80%">
 </p>
-Figure 2: Test error vs. number of epoch reduction in CIFAR10 and ImageNet training. The dashed lines are test errors of the SGD baseline. For CIFAR, SRSGD training with fewer epochs can achieve comparable results to SRSGD training with full 200 epochs. For ImageNet, training with less epochs slightly decreases the performance of SRSGD but still achieves comparable results to the SGD baseline training.
+Figure 2: Test error vs. number of epoch reduction in CIFAR10 and ImageNet training. The dashed lines are test errors of the SGD baseline. On both CIFAR and ImageNet, **SRSGD reaches similar or even better error rates with fewer training epochs compared to the SGD baseline**.
 
 ## Requirements
 This code is tested inside the NVIDIA Pytorch docker container release 19.09. This container can be pulled from NVIDIA GPU Cloud as follows:
