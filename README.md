@@ -15,6 +15,7 @@
 </p>
 Figure 1: Error vs. depth of ResNet models trained with SRSGD and the baseline SGD with constant momemtum. Advantage of SRSGD continues to grow with depth.
 <br/>
+<br/>
 
 <p align="center">
   <img src="pics/srsgd_epoch_reduction.png" width="80%" heigh="80%">
