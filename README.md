@@ -1,7 +1,7 @@
 <h1 align="center">Scheduled Restart SGD</h1>
 <h5 align="center">Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent</h5>
 
-![Image of SRSGD](https://almostconvergent.blogs.rice.edu/files/2020/02/turtle_rocket.jpg)
+![Image of SRSGD](https://ybnn0793-prd0-257-sjc3.nv-us-west-2.proxy.ace.ngc.nvidia.com/lab/tree/icon.jpg)
 
 ## Resources
 [Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd)
