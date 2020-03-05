@@ -5,6 +5,10 @@
   <img width="307" height="200" src="pics/icon.jpg">
 </p>
 
+<p align="center">
+  <img width="307" height="200" src="pics/error_vs_depth_srsgd.png">
+</p>
+
 ## Resources
 [Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd)
 
