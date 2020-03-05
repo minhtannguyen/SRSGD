@@ -49,12 +49,16 @@ We provide code for plotting figures in our paper in the jupyter notebook `plot_
 A training [recipe](recipes.md) is provided for image classification experiments (see `recipes.md`). The recipe contains the commands to run experiments for Table 1, 2, 3, 4 and 5 in our paper, which includes full and short trainings on CIFAR10, CIFAR100, and ImageNet using SRSGD, as well as the baseline SGD trainings. Other experiments in our paper and in the appendix can be run using the same `cifar.py` and `imagenet.py` files with different values of parameters.
 
 ## Citation
-You can cite us with the following Bibtex if you use SRSGD in your project.
+Please cite the following paper if you found our SRSGD useful. Thanks!
 
+>Bao Wang, Tan M Nguyen, Andrea L Bertozzi, Richard G Baraniuk, and Stanley J Osher. "Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent." arXiv preprint arXiv:2002.10583 (2020).
+
+```
 @article{wang2020scheduled,
   title={Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent},
   author={Wang, Bao and Nguyen, Tan M and Bertozzi, Andrea L and Baraniuk, Richard G and Osher, Stanley J},
   journal={arXiv preprint arXiv:2002.10583},
   year={2020}
 }
+```
 
