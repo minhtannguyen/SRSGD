@@ -1,6 +1,8 @@
 <h1 align="center">Scheduled Restart SGD</h1>
 <h5 align="center">Scheduled Restart Momentum for Accelerated Stochastic Gradient Descent</h5>
-[Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd/)
+
+## Resources
+[Paper](https://arxiv.org/abs/2002.10583), [Slides](https://drive.google.com/file/d/16Uu7QGB_6BPsFSXKbhmyyZWRVVIHJ-aC/view?usp=sharing), [Blog](http://almostconvergent.blogs.rice.edu/2020/02/21/srsgd)
 
 ## Requirements
 This code is tested inside the NVIDIA Pytorch docker container release 19.09. This container can be pulled from NVIDIA GPU Cloud as follows:
